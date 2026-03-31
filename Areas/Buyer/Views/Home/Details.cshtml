@@ -1,0 +1,229 @@
+﻿@model iameewh.Models.ShoppingCart
+@using System.Security.Claims
+@using System.Collections.Generic
+
+@{
+    ViewData["Title"] = Model.Product.Name;
+    var reviews = ViewBag.ReviewList as List<iameewh.Models.Review>;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+<style>
+    .text-kimi {
+        color: #ff5000;
+    }
+
+    .bg-kimi {
+        background-color: #ff5000;
+    }
+
+    .btn-kimi {
+        background-color: #ff5000;
+        color: white;
+        border: none;
+    }
+
+        .btn-kimi:hover {
+            background-color: #e64a00;
+            color: white;
+        }
+
+    /* Hệ thống sao đánh giá chuẩn (Sửa lỗi hover) */
+    .rating-css {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+    }
+
+        .rating-css input {
+            display: none;
+        }
+
+        .rating-css label {
+            font-size: 30px;
+            color: #ccc;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: color 0.2s;
+        }
+
+            .rating-css input:checked ~ label,
+            .rating-css label:hover,
+            .rating-css label:hover ~ label {
+                color: #ffdb19;
+            }
+</style>
+
+<form method="post" asp-action="Details">
+    <input hidden asp-for="ProductId" />
+    <div class="container mt-4 mb-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-kimi">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+            <div class="card-body p-5">
+                <div class="row">
+                    <div class="col-12 col-lg-5 text-center mb-4 mb-lg-0">
+                        <img src="@Model.Product.ImageUrl" class="rounded w-100 border shadow-sm" style="object-fit: cover; max-height: 500px;" alt="@Model.Product.Name" onerror="this.src='/images/no-image.png'" />
+                    </div>
+
+                    <div class="col-12 col-lg-6 offset-lg-1 d-flex flex-column justify-content-center">
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="badge bg-warning text-dark fs-6 px-3 py-2">@Model.Product.Category.Name</span>
+                            @if (Model.Product.Stock <= 0)
+                            {
+                                <span class="badge bg-danger fs-6 px-3 py-2 ms-2">HẾT HÀNG</span>
+                            }
+                        </div>
+
+                        <h2 class="fw-bold mb-3 text-dark">@Model.Product.Name</h2>
+                        <h3 class="fw-bold text-kimi mb-4">@Model.Product.Price.ToString("N0") VNĐ</h3>
+
+                        <div class="text-secondary mb-4" style="line-height: 1.8; font-size: 15px;">
+                            @Html.Raw(Model.Product.Description)
+                        </div>
+
+                        <div class="row align-items-center mb-4">
+                            <div class="col-5 col-md-4">
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-light fw-semibold">Số lượng</span>
+                                    @if (Model.Product.Stock > 0)
+                                    {
+                                        <input asp-for="Count" type="number" value="1" class="form-control text-center" min="1" max="@Model.Product.Stock" />
+                                    }
+                                    else
+                                    {
+                                        <input disabled value="0" class="form-control text-center bg-light" />
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-7 col-md-8 text-muted" style="font-size: 14px;">
+                                @if (Model.Product.Stock > 0)
+                                {
+                                    <span>(Còn @Model.Product.Stock sản phẩm | Đã bán @Model.Product.SoldQuantity)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger fw-bold">Tạm hết hàng (Đã bán @Model.Product.SoldQuantity)</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row mt-auto">
+                            <div class="col-12 col-md-6 mb-3 mb-md-0">
+                                @if (Model.Product.Stock > 0)
+                                {
+                                    <button type="submit" class="btn btn-kimi w-100 py-3 text-uppercase fw-bold shadow-sm rounded-3">
+                                        <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ hàng
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" disabled class="btn btn-secondary w-100 py-3 text-uppercase fw-bold shadow-sm rounded-3">
+                                        <i class="bi bi-x-circle me-2"></i> Tạm hết hàng
+                                    </button>
+                                }
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <a asp-action="Index" asp-controller="Home" class="btn btn-light border w-100 py-3 text-uppercase fw-bold shadow-sm rounded-3 text-dark">
+                                    <i class="bi bi-arrow-left me-2"></i> Quay lại
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="container mb-5 p-5 bg-white shadow-sm rounded-3 border-0">
+    <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark">ĐÁNH GIÁ SẢN PHẨM</h4>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="card p-4 border-0 mb-5 shadow-sm" style="background-color: #f8f9fa; border-radius: 12px;">
+            <h6 class="fw-bold mb-3 text-kimi">Bạn đánh giá thế nào về sản phẩm này?</h6>
+            <form action="/Review/SubmitReview" method="post">
+                <input type="hidden" name="ProductId" value="@Model.Product.Id" />
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <div class="rating-css d-inline-flex">
+                        <input type="radio" value="5" name="Rating" id="rating5">
+                        <label for="rating5" class="fa fa-star"></label>
+                        <input type="radio" value="4" name="Rating" id="rating4">
+                        <label for="rating4" class="fa fa-star"></label>
+                        <input type="radio" value="3" name="Rating" id="rating3">
+                        <label for="rating3" class="fa fa-star"></label>
+                        <input type="radio" value="2" name="Rating" id="rating2">
+                        <label for="rating2" class="fa fa-star"></label>
+                        <input type="radio" value="1" name="Rating" id="rating1" checked>
+                        <label for="rating1" class="fa fa-star"></label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <textarea name="Comment" class="form-control shadow-sm" rows="4" placeholder="Nhập nội dung đánh giá chi tiết của bạn về sản phẩm này..." style="border-radius: 8px;" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-kimi px-5 py-2 fw-bold shadow-sm" style="border-radius: 8px;">Gửi đánh giá</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert text-center mb-5 shadow-sm rounded-3" style="border: 1px solid #ff5000; background: #fff5f0;">
+            <i class="bi bi-info-circle text-kimi me-2"></i> Vui lòng <a asp-controller="Account" asp-action="Login" class="fw-bold text-decoration-none text-kimi">đăng nhập</a> để viết đánh giá cho sản phẩm này.
+        </div>
+    }
+
+    @if (reviews != null && reviews.Any())
+    {
+        <div class="list-group list-group-flush mt-3">
+            @foreach (var review in reviews)
+            {
+                <div class="list-group-item px-0 py-4 border-bottom-0 shadow-sm mb-4 rounded-3 p-4" style="background-color: #ffffff; border: 1px solid #f0f0f0;">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 d-flex align-items-center justify-content-center fw-bold text-white rounded-circle shadow-sm" style="width: 50px; height: 50px; background: linear-gradient(135deg, #ff5000, #ff8c00); font-size: 1.2rem;">
+                                @review.ApplicationUser.Name.Substring(0, 1).ToUpper()
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold text-dark">@review.ApplicationUser.Name</h6>
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i>@review.CreatedDate.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                        </div>
+                        <div class="text-warning" style="font-size: 16px;">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <i class="fa fa-star"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-star-o" style="color: #e0e0e0;"></i>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <p class="text-dark bg-light p-3 mb-0 rounded-3" style="font-size: 14px; border-left: 4px solid #ff5000;">
+                        @review.Comment
+                    </p>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 bg-light rounded-3 border" style="border-style: dashed !important;">
+            <i class="bi bi-chat-square-text text-muted mb-3" style="font-size: 2.5rem; display: block;"></i>
+            <p class="text-muted fw-medium mb-0">Chưa có đánh giá nào cho sản phẩm này. Hãy là người đầu tiên!</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<iameewh.Models.Product>
+
+<div class="container bg-white p-4 shadow-sm mt-4 rounded">
+    <div class="row align-items-center">
+        <div class="col-6">
+            <h2 class="text-taobao fw-bold mb-0">QUẢN LÝ SẢN PHẨM</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="Product" asp-action="Upsert" class="btn bg-taobao px-4 py-2 fw-bold shadow-sm" style="background-color: #ff5000; color: white;">
+                <i class="bi bi-plus-circle"></i> THÊM SẢN PHẨM MỚI
+            </a>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th width="10%">Ảnh</th>
+                <th width="35%">Tên sản phẩm</th>
+                <th width="15%">Giá bán</th>
+                <th width="15%">Danh mục</th>
+                <th width="25%" class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@obj.ImageUrl" class="rounded border" style="width:60px; height:60px; object-fit:cover" />
+                    </td>
+                    <td class="fw-bold text-secondary">@obj.Name</td>
+                    <td class="text-taobao fw-bold" style="color: #ff5000;">@obj.Price.ToString("N0") đ</td>
+                    <td><span class="badge bg-light text-dark border">@obj.Category.Name</span></td>
+                    <td class="text-center">
+                        <div class="btn-group" role="group">
+                            <a asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-outline-primary btn-sm mx-1 rounded">
+                                <i class="bi bi-pencil-square"></i> Sửa
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-outline-danger btn-sm mx-1 rounded">
+                                <i class="bi bi-trash-fill"></i> Xóa
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

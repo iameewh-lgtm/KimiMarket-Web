@@ -1,0 +1,35 @@
+﻿@model iameewh.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Chi tiết Người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid pt-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">CHI TIẾT NGƯỜI DÙNG</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card shadow border-0" style="max-width: 600px;">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">Thông tin tài khoản</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold text-muted">Họ và tên:</div>
+                <div class="col-sm-8 fw-bold">@Model.Name</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold text-muted">Email đăng nhập:</div>
+                <div class="col-sm-8">@Model.Email</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 fw-bold text-muted">Số điện thoại:</div>
+                <div class="col-sm-8">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Chưa cập nhật" : Model.PhoneNumber)</div>
+            </div>
+
+        </div>
+    </div>
+</div>

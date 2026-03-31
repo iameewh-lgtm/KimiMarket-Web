@@ -1,0 +1,228 @@
+﻿@model iameewh.Models.ProductListVM
+@{
+    ViewData["Title"] = "Trang chủ";
+    var sliders = ViewBag.SliderList as List<iameewh.Models.Slider>;
+    var categories = ViewBag.CategoryList as List<iameewh.Models.Category>;
+}
+
+<style>
+    .tb-main-nav {
+        background-color: #ff5000;
+        height: 40px;
+        line-height: 40px;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+        .tb-main-nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+    .tb-category-menu {
+        background: #fff;
+        border: 1px solid #ff5000;
+        height: 500px;
+        padding: 10px 0;
+        overflow-y: auto;
+    }
+
+    .tb-category-item {
+        padding: 8px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        color: #666;
+        text-decoration: none;
+        display: block;
+    }
+
+        .tb-category-item:hover {
+            background: #ffe4d9;
+            color: #ff5000;
+            font-weight: bold;
+        }
+
+    .tb-carousel-wrapper {
+        height: 500px;
+        background: #eee;
+        overflow: hidden;
+    }
+
+    .tb-carousel-img {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+    }
+
+    .tb-user-card {
+        background: #fff;
+        height: 500px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid #eee;
+    }
+
+    .tb-user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #eee;
+        margin: 0 auto 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #ccc;
+    }
+
+    .tb-product-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 10px;
+        transition: transform 0.2s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        margin-bottom: 20px;
+    }
+
+        .tb-product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #ff5000;
+        }
+
+    .tb-product-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    .tb-product-price {
+        color: #ff5000;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .tb-product-name {
+        font-size: 13px;
+        color: #333;
+        height: 40px;
+        overflow: hidden;
+        margin-top: 5px;
+        line-height: 20px;
+    }
+</style>
+
+<div class="tb-main-nav shadow-sm">
+    <div class="container d-flex">
+        <div style="width: 20%; background: #e64a00; text-align: center;"><i class="bi bi-list"></i> CHỦ ĐỀ THỊ TRƯỜNG</div>
+        <div style="width: 80%;" class="ps-3">
+            <a asp-area="Buyer" asp-controller="Home" asp-action="Index">TẤT CẢ SẢN PHẨM</a>
+            <a asp-area="Buyer" asp-controller="Home" asp-action="Reels">VIDEO REELS</a>
+            <a asp-area="Buyer" asp-controller="Cart" asp-action="Index">GIỎ HÀNG</a>
+            <a asp-area="Buyer" asp-controller="Order" asp-action="Index">ĐƠN HÀNG CỦA TÔI</a>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-3">
+    <div class="row g-2">
+        <div class="col-md-2">
+            <div class="tb-category-menu shadow-sm rounded">
+                @if (categories != null && categories.Any())
+                {
+                    foreach (var cat in categories)
+                    {
+                        <a asp-area="Buyer" asp-controller="Home" asp-action="Index" asp-route-categoryId="@cat.Id" class="tb-category-item">@cat.Name</a>
+                    }
+                }
+                else
+                {
+                    <div class="p-3 text-muted small">Chưa có danh mục</div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div id="taobaoCarousel" class="carousel slide tb-carousel-wrapper shadow-sm rounded" data-bs-ride="carousel">
+                <div class="carousel-inner h-100">
+                    @if (sliders != null && sliders.Any())
+                    {
+                        for (int i = 0; i < sliders.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "") h-100">
+                                <img src="@sliders[i].ImageUrl" class="tb-carousel-img" alt="@sliders[i].Title">
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="carousel-item active h-100 bg-secondary d-flex align-items-center justify-content-center text-white">
+                            <h4>KIMI MARKET CHÀO BẠN!</h4>
+                        </div>
+                    }
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#taobaoCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                <button class="carousel-control-next" type="button" data-bs-target="#taobaoCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="tb-user-card shadow-sm rounded">
+                <div class="tb-user-avatar border"><i class="bi bi-person-fill"></i></div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <h6 class="mt-2 fw-bold text-truncate">Chào, @(User.FindFirst("FullName")?.Value ?? User.Identity.Name)!</h6>
+                    <form class="mt-3" asp-area="Buyer" asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-sm text-white w-100 fw-bold shadow-sm" style="background-color: #ff5000; border-radius: 20px;">Đăng xuất</button>
+                    </form>
+                }
+                else
+                {
+                    <h6 class="mt-2">Chào mừng bạn!</h6>
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <a asp-area="Buyer" asp-controller="Account" asp-action="Register" class="btn btn-sm text-white bg-brand rounded-pill px-3">Đăng ký</a>
+                        <a asp-area="Buyer" asp-controller="Account" asp-action="Login" class="btn btn-sm text-white bg-brand rounded-pill px-3">Đăng nhập</a>
+                    </div>
+                }
+                <hr class="my-4">
+                <div class="text-start">
+                    <h6 class="fw-bold text-brand small"><i class="bi bi-megaphone-fill"></i> TIN TỨC</h6>
+                    <ul class="list-unstyled mt-2 small">
+                        <li><p class="text-dark">● Khai trương KIMI MARKET</p></li>
+                        <li><p class="text-dark">● Miễn phí vận chuyển toàn quốc</p></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h4 class="fw-bold mb-4"><span class="text-brand">♥</span> GỢI Ý CHO BẠN</h4>
+        <div class="row">
+            @if (Model?.Products != null && Model.Products.Any())
+            {
+                foreach (var product in Model.Products)
+                {
+                    <div class="col-md-3 col-lg-2">
+                        @* Đã gắn asp-area="Buyer" để hết lỗi 404 khi xem chi tiết *@
+                        <a asp-area="Buyer" asp-controller="Home" asp-action="Details" asp-route-productId="@product.Id" class="tb-product-card shadow-sm">
+                            <img src="@product.ImageUrl" class="tb-product-img" onerror="this.src='/images/no-image.png'" />
+                            <div class="tb-product-name">@product.Name</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="tb-product-price mb-0">₫@product.Price.ToString("N0")</span>
+                                <span class="text-muted" style="font-size: 10px;">Đã bán @product.SoldQuantity</span>
+                            </div>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

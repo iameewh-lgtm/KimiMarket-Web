@@ -1,0 +1,69 @@
+﻿@model List<iameewh.Models.Reel>
+@{
+    ViewData["Title"] = "Video Reels";
+}
+
+<style>
+    .reels-container {
+        background-color: #000;
+        height: calc(100vh - 150px);
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+    }
+
+    .reel-item {
+        height: 100%;
+        scroll-snap-align: start;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    video {
+        max-height: 100%;
+        max-width: 100%;
+    }
+
+    .product-info-card {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 12px;
+        width: 320px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+</style>
+
+<div class="container mt-3">
+    <div class="reels-container rounded shadow-lg">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var reel in Model)
+            {
+                <div class="reel-item">
+                    <video controls loop muted autoplay>
+                        <source src="@reel.VideoUrl" type="video/mp4">
+                    </video>
+                    @if (reel.Product != null)
+                    {
+                        <div class="product-info-card">
+                            <img src="@reel.Product.ImageUrl" style="width: 50px; height: 50px; object-fit: cover;" class="rounded" />
+                            <div class="flex-grow-1">
+                                <div class="fw-bold small text-truncate">@reel.Product.Name</div>
+                                <div class="text-danger fw-bold">@reel.Product.Price.ToString("N0") ₫</div>
+                            </div>
+                            <a asp-area="Buyer" asp-controller="Home" asp-action="Details" asp-route-productId="@reel.ProductId"
+                               class="btn btn-sm btn-orange text-white fw-bold rounded-pill">Xem chi tiết</a>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

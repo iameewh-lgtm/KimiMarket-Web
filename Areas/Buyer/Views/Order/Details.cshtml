@@ -1,0 +1,94 @@
+﻿@model iameewh.Models.OrderVM
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.OrderHeader.Id;
+}
+
+<div class="container mt-5 mb-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-receipt"></i> CHI TIẾT ĐƠN HÀNG #@Model.OrderHeader.Id</h4>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-12 col-lg-6 border-end">
+                    <h5 class="text-primary fw-bold mb-3">Thông tin giao hàng</h5>
+                    <div class="mb-2"><strong>Họ tên:</strong> @Model.OrderHeader.Name</div>
+                    <div class="mb-2"><strong>Số điện thoại:</strong> @Model.OrderHeader.PhoneNumber</div>
+                    <div class="mb-2"><strong>Ngày đặt:</strong> @Model.OrderHeader.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                    <div class="mb-2">
+                        <strong>Trạng thái:</strong>
+                        <span class="badge bg-info text-dark">@Model.OrderHeader.OrderStatus</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Địa chỉ chi tiết:</strong><br />
+                        @Model.OrderHeader.StreetAddress<br />
+                        @Model.OrderHeader.Ward, @Model.OrderHeader.District<br />
+                        @Model.OrderHeader.City
+                    </div>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="mt-5 p-3 bg-light rounded border">
+                            <h6 class="text-primary fw-bold mb-3"><i class="bi bi-gear"></i> Cập nhật trạng thái đơn hàng</h6>
+                            <form method="post" asp-action="UpdateStatus">
+                                <input type="hidden" name="orderId" value="@Model.OrderHeader.Id" />
+                                <div class="input-group">
+                                    <select name="status" class="form-select">
+                                        <option value="Đã thanh toán" selected="@(Model.OrderHeader.OrderStatus == "Đã thanh toán")">Đã thanh toán</option>
+                                        <option value="Đang giao hàng" selected="@(Model.OrderHeader.OrderStatus == "Đang giao hàng")">Đang giao hàng</option>
+                                        <option value="Đã hoàn thành" selected="@(Model.OrderHeader.OrderStatus == "Đã hoàn thành")">Đã hoàn thành</option>
+                                        <option value="Đã hủy" selected="@(Model.OrderHeader.OrderStatus == "Đã hủy")">Đã hủy</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </div>
+                            </form>
+                        </div>
+                    }
+                </div>
+
+                <div class="col-12 col-lg-6 ps-lg-4 mt-4 mt-lg-0">
+                    <h5 class="text-primary fw-bold mb-3">Sản phẩm đã đặt</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm table-borderless">
+                            <thead class="border-bottom">
+                                <tr>
+                                    <th class="text-muted">Tên sản phẩm</th>
+                                    <th class="text-center text-muted">SL</th>
+                                    <th class="text-end text-muted">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderDetails)
+                                {
+                                    <tr>
+                                        <td class="fw-medium">@item.Product.Name</td>
+                                        <td class="text-center">x@(item.Count)</td>
+                                        <td class="text-end">@((item.Price * item.Count).ToString("N0")) ₫</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h5 class="text-primary fw-bold mb-3 mt-4">Tổng kết đơn hàng</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Giá trị hàng hóa:</span>
+                        <span class="fw-bold">@Model.OrderHeader.OrderTotal.ToString("N0") ₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Phí vận chuyển:</span>
+                        <span class="text-success fw-bold">Miễn phí</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 fw-bold mb-0">Tổng thanh toán:</span>
+                        <span class="h4 fw-bold text-danger mb-0">@Model.OrderHeader.OrderTotal.ToString("N0") VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>        <div class="card-footer bg-white border-top p-3 text-end">
+            <a asp-action="Index" class="btn btn-outline-dark"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
+        </div>
+    </div>
+</div>

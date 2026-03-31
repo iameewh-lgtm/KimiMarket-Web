@@ -1,0 +1,110 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Bảng điều khiển";
+    // Đảm bảo sử dụng đúng Layout của trang Admin mà bạn đã tạo trước đó
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid pt-3">
+    <h2 class="fw-bold mb-4 text-primary">TỔNG QUAN HỆ THỐNG</h2>
+
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 bg-primary text-white">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Tổng Doanh Thu</div>
+                            <div class="h3 mb-0 font-weight-bold">
+                                @(ViewBag.TotalRevenue != null ? string.Format("{0:N0}", ViewBag.TotalRevenue) : "0") ₫
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-currency-dollar fs-1 text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 bg-success text-white">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Tổng Đơn Hàng</div>
+                            <div class="h3 mb-0 font-weight-bold">
+                                @(ViewBag.TotalOrders ?? 0) đơn
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-cart-check fs-1 text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 bg-info text-white">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Tổng Khách Hàng</div>
+                            <div class="h3 mb-0 font-weight-bold">
+                                @(ViewBag.TotalUsers ?? 0) người
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fs-1 text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4 mt-3 border-0">
+        <div class="card-header py-3 bg-white">
+            <h5 class="m-0 font-weight-bold text-primary"><i class="bi bi-star-fill text-warning"></i> Top 5 Sản Phẩm Bán Chạy</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá bán</th>
+                            <th>Đã bán (Số lượng)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center align-middle">
+                                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" style="width: 50px; height: 50px; object-fit: cover;" class="rounded shadow-sm" onerror="this.src='/images/no-image.png'" />
+                                    </td>
+                                    <td class="align-middle fw-bold">@item.Product.Name</td>
+                                    <td class="align-middle text-danger fw-bold">@item.Product.Price.ToString("N0") ₫</td>
+                                    <td class="align-middle">
+                                        <span class="badge bg-success" style="font-size: 14px;">@item.TotalQty</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">Chưa có dữ liệu bán hàng.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

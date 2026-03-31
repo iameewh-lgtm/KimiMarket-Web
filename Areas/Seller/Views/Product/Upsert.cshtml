@@ -1,0 +1,66 @@
+﻿@model iameewh.Models.Product
+
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white py-3">
+            @* Tự động đổi tiêu đề tùy theo việc có ID hay không *@
+            <h2 class="mb-0">@(Model.Id != 0 ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới")</h2>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data">
+
+                @* CỰC KỲ QUAN TRỌNG: Phải giấu cái ID đi để lúc POST lên nó biết đang sửa thằng nào *@
+                <input asp-for="Id" hidden />
+                @* Giấu luôn đường dẫn ảnh cũ để hổng bị mất ảnh khi sửa mà hông up ảnh mới *@
+                <input asp-for="ImageUrl" hidden />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tên sản phẩm</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Giá bán</label>
+                        <input asp-for="Price" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Số lượng tồn</label>
+                        <input asp-for="Stock" class="form-control" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Danh mục</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-select">
+                        <option disabled selected>--Chọn danh mục--</option>
+                    </select>
+                </div>
+
+                @* Hiển thị ảnh cũ nếu đang ở chế độ Cập nhật *@
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Hình ảnh</label>
+                    <input type="file" name="file" class="form-control mb-2" />
+                    @if (Model.Id != 0 && !string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" width="150" class="border rounded shadow-sm" />
+                    }
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary px-4">
+                        @(Model.Id != 0 ? "Cập nhật" : "Thêm mới")
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

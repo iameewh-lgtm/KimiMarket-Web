@@ -1,0 +1,163 @@
+﻿@model iameewh.Models.OrderHeader
+@{
+    ViewData["Title"] = "Thanh toán đơn hàng";
+    var cartList = ViewBag.CartList as IEnumerable<iameewh.Models.ShoppingCart>;
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex align-items-center mb-4">
+        <h2 class="fw-bold text-primary mb-0">XÁC NHẬN ĐẶT HÀNG</h2>
+    </div>
+    <form method="post">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="card shadow border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold">Thông tin giao hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">Họ và tên người nhận</label>
+                            <input asp-for="Name" class="form-control" placeholder="Nhập họ tên" required />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label fw-bold">Số điện thoại</label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" required />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Tỉnh / Thành phố</label>
+                                <select class="form-select" id="province" name="Province" required>
+                                    <option value="" disabled selected>Chọn Tỉnh/Thành</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Quận / Huyện</label>
+                                <select class="form-select" id="district" name="District" required>
+                                    <option value="" disabled selected>Chọn Quận/Huyện</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Phường / Xã</label>
+                                <select class="form-select" id="ward" name="Ward" required>
+                                    <option value="" disabled selected>Chọn Phường/Xã</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Địa chỉ chi tiết (Số nhà, tên đường)</label>
+                            <input type="text" name="Address" class="form-control" placeholder="Ví dụ: 123 Đường ABC" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold">Phương thức thanh toán</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3 border p-3 rounded">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCOD" value="COD" checked>
+                            <label class="form-check-label fw-bold w-100" for="paymentCOD">
+                                Thanh toán khi nhận hàng (COD)
+                                <small class="d-block text-muted fw-normal mt-1">Khách hàng thanh toán bằng tiền mặt khi nhận hàng từ bưu tá.</small>
+                            </label>
+                        </div>
+                        <div class="form-check border p-3 rounded">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentVNPay" value="VNPay">
+                            <label class="form-check-label fw-bold w-100" for="paymentVNPay">
+                                Thanh toán trực tuyến (VNPay / Momo)
+                                <small class="d-block text-muted fw-normal mt-1">Thanh toán an toàn qua cổng điện tử.</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold">Tóm tắt đơn hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush mb-3">
+                            @if (cartList != null && cartList.Any())
+                            {
+                                foreach (var item in cartList)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between lh-sm px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="rounded me-3 border" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.src='/images/no-image.png'" />
+                                            <div>
+                                                <h6 class="my-0 fw-bold text-truncate" style="max-width: 200px;">@item.Product.Name</h6>
+                                                <small class="text-muted">Số lượng: @item.Count</small>
+                                            </div>
+                                        </div>
+                                        <span class="text-danger fw-bold">@((item.Product.Price * item.Count).ToString("N0")) ₫</span>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-3">
+                            <span class="fw-bold">Tổng cộng (VNĐ)</span>
+                            <strong class="text-danger fs-4">@Model.OrderTotal.ToString("N0") ₫</strong>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 pb-4 pt-0">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-3 shadow">ĐẶT HÀNG NGAY</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        var citis = document.getElementById("province");
+        var districts = document.getElementById("district");
+        var wards = document.getElementById("ward");
+        var Parameter = {
+            url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+            method: "GET",
+            responseType: "application/json",
+        };
+        var promise = axios(Parameter);
+        promise.then(function (result) {
+            renderCity(result.data);
+        });
+
+        function renderCity(data) {
+            for (const x of data) {
+                citis.options[citis.options.length] = new Option(x.Name, x.Name);
+            }
+            citis.onchange = function () {
+                district.length = 1;
+                ward.length = 1;
+                if (this.value != "") {
+                    const result = data.filter(n => n.Name === this.value);
+
+                    for (const k of result[0].Districts) {
+                        district.options[district.options.length] = new Option(k.Name, k.Name);
+                    }
+                }
+            };
+            district.onchange = function () {
+                ward.length = 1;
+                const dataCity = data.filter((n) => n.Name === citis.value);
+                if (this.value != "") {
+                    const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+
+                    for (const w of dataWards) {
+                        wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                    }
+                }
+            };
+        }
+    </script>
+}

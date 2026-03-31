@@ -1,0 +1,48 @@
+﻿@model IEnumerable<iameewh.Models.Slider>
+
+<div class="container bg-white p-4 shadow-sm mt-4 rounded">
+    <div class="row align-items-center">
+        <div class="col-6">
+            <h2 class="text-taobao fw-bold mb-0">QUẢN LÝ BANNER (SLIDER)</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Create" class="btn bg-taobao px-4 py-2 fw-bold shadow-sm">
+                <i class="bi bi-plus-circle"></i> THÊM BANNER MỚI
+            </a>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th width="20%">Hình ảnh</th>
+                <th width="55%">Tiêu đề Banner</th>
+                <th width="25%" class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@obj.ImageUrl" class="rounded border shadow-sm" style="width:150px; height:60px; object-fit:cover" />
+                    </td>
+                    <td class="fw-bold text-secondary">@obj.Title</td>
+                    <td class="text-center">
+                        <a asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-outline-danger btn-sm px-3" onclick="return confirm('Bạn có chắc chắn muốn xóa banner này không?')">
+                            <i class="bi bi-trash-fill"></i> Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="3" class="text-center text-muted py-4">Chưa có banner nào được tạo.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
